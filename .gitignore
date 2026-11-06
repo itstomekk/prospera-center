@@ -28,3 +28,6 @@ dist-ssr
 .env.*
 .dev.vars
 .wrangler/
+
+# Local ops scripts and DNS backups
+ops/
