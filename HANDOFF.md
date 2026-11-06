@@ -43,8 +43,29 @@
   nameservers at Namecheap, then add `prospera.center` + `www.prospera.center` as Pages custom domains, add a www ->
   apex redirect rule, re-export new signups from Lovable, verify, and unpublish Lovable after 2 weeks.
 
+## Cutover progress (2026-11-02)
+
+- Cloudflare zone `prospera.center` created (id `877a993b1420e9c9780d458e52a512f5`, Free plan) with the token in
+  `C:\Users\Lenovo\.secrets\cloudflare.env` (the Hermes `.env` token cannot create zones). Records: apex and www
+  proxied CNAME -> `prospera-center.pages.dev`, `_dmarc` TXT copied from Namecheap. Pages custom domains added for
+  both. Redirect rule `ce83ab59` sends www -> apex (301).
+- Lovable still had 7 signups, the same 7 in D1: nothing to copy.
+- **Blocked:** nameservers at Namecheap still `dns1/2.registrar-servers.com`. The Namecheap API rejects the current
+  IP `168.228.193.69` (not whitelisted). `ops/switch_nameservers.py` (gitignored) retries every 5 min for 12 h and
+  calls `setCustom` with hunts/treasure.ns.cloudflare.com once accepted; log in `ops/switch.log`.
+  Manual alternative: Namecheap > Domain > Nameservers > Custom DNS.
+- After the switch: confirm zone `active`, both Pages domains `active`, apex 200, www 301, `/api/subscribe` 422 on a
+  bad email, then unpublish Lovable after 2 weeks.
+
+## SEO (2026-11-02)
+
+- New 1200x630 `public/og-image.png` (rendered from a purpose-built card in the site's colours and fonts) replaces
+  Lovable's generic image; `twitter:site @Lovable` removed; `og:url` added. No static canonical: it would mark every section as a copy of `/`.
+- `public/sitemap.xml` (static, 18 URLs: home + sections 1-17; section 19 is revision notes, left out). Regenerate it
+  when sections change in `src/content/prospera-knowledge.md`. `robots.txt` points to it.
+- `public/_headers`: `X-Robots-Tag: noindex` on the pages.dev copies.
+
 ## Known issues (same on the Lovable site)
 
-- `og:image` still points at Lovable's generic image (`lovable.dev/opengraph-image-p98pqg.png`). Needs a real share
-  image.
 - Unknown paths return the SPA with HTTP 200 instead of 404.
+- OG tags are the home page's on every route, and there is no per-route canonical (client-side SPA, no prerender).
